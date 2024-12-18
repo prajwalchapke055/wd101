@@ -1,1 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Registration Form</h2>
+    <form id="registrationForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+        
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" required>
+        
+        <label>
+            <input type="checkbox" id="acceptTerms">
+            Accept Terms & Conditions
+        </label>
+        
+        <button type="submit">Submit</button>
+    </form>
+
+    <table id="registrationTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Password</th>
+                <th>Dob</th>
+                <th>Accepted terms?</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data rows will go here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Load data from localStorage
+    window.onload = function() {
+        loadDataFromLocalStorage();
+    };
+
+    // Function to validate age between 18 and 55
+    function validateAge(dob) {
+        const birthDate = new Date(dob);
+        const currentDate = new Date();
+        const age = currentDate.getFullYear() - birthDate.getFullYear();
+        const m = currentDate.getMonth() - birthDate.getMonth();
+
+        if (m < 0 || (m === 0 && currentDate.getDate() < birthDate.getDate())) {
+            age--;
+        }
+
+        return age >= 18 && age <= 55;
+    }
+
+    // Handle form submission
+    document.getElementById('registrationForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const dob = document.getElementById('dob').value;
+        const acceptTerms = document.getElementById('acceptTerms').checked;
+
+        // Validate DOB (Age between 18 and 55)
+        if (!dob || !validateAge(dob)) {
+            alert("You must be between 18 and 55 years old to register.");
+            return;
+        }
+
+        // Save data to localStorage
+        const registrationData = {
+            name,
+            email,
+            password,
+            dob,
+            acceptedTerms: acceptTerms
+        };
+
+        let registrations = JSON.parse(localStorage.getItem('registrations')) || [];
+        registrations.push(registrationData);
+        localStorage.setItem('registrations', JSON.stringify(registrations));
+
+        // Load data into table
+        loadDataFromLocalStorage();
+
+        // Reset form
+        document.getElementById('registrationForm').reset();
+    });
+
+    // Load data from localStorage into table
+    function loadDataFromLocalStorage() {
+        const registrations = JSON.parse(localStorage.getItem('registrations')) || [];
+        const tableBody = document.getElementById('registrationTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = "";  // Clear existing table data
+
+        registrations.forEach(registration => {
+            const row = tableBody.insertRow();
+            row.insertCell(0).innerText = registration.name;
+            row.insertCell(1).innerText = registration.email;
+            row.insertCell(2).innerText = registration.password;
+            row.insertCell(3).innerText = registration.dob;
+            row.insertCell(4).innerText = registration.acceptedTerms ? "true" : "false";
+        });
+    }
+</script>
+
+</body>
+</html>
 
